@@ -1,0 +1,400 @@
+{%- liquid
+  assign heading       = section.settings.heading
+  assign heading_color = section.settings.heading_color
+  assign bg_color      = section.settings.bg_color
+  assign max_width     = section.settings.max_width
+  assign pt            = section.settings.padding_top
+  assign pb            = section.settings.padding_bottom
+  assign show_footnote = section.settings.show_footnote
+  assign footnote      = section.settings.footnote
+  assign footnote_color = section.settings.footnote_color
+  assign sid           = section.id
+-%}
+
+<div
+  class="pct-bars-section"
+  id="PctBars-{{ sid }}"
+  style="background-color: {{ bg_color }}; padding-top: {{ pt }}px; padding-bottom: {{ pb }}px;"
+>
+  <div class="pct-bars-inner" style="max-width: {{ max_width }}px;">
+
+    {%- if heading != blank -%}
+      <h2 class="pct-bars-heading" style="color: {{ heading_color }};">{{ heading }}</h2>
+    {%- endif -%}
+
+    <div class="pct-bars-list">
+      {%- for block in section.blocks -%}
+        {%- liquid
+          assign pct         = block.settings.percentage
+          assign label       = block.settings.label
+          assign fill_color  = block.settings.fill_color
+          assign track_color = block.settings.track_color
+          assign text_color  = block.settings.text_color
+          assign is_bold     = block.settings.bold_text
+          assign is_upper    = block.settings.uppercase_text
+        -%}
+
+        {%- capture label_style -%}
+          color: {{ text_color }};
+          {%- if is_bold -%}font-weight: 700;{%- endif -%}
+          {%- if is_upper -%}text-transform: uppercase;{%- endif -%}
+        {%- endcapture -%}
+
+        <div class="pct-bar-wrap" {{ block.shopify_attributes }}>
+          <div
+            class="pct-bar-track"
+            style="background-color: {{ track_color }};"
+          >
+            <div
+              class="pct-bar-fill"
+              style="--target-pct: {{ pct }}%; background-color: {{ fill_color }};"
+            >
+              <span class="pct-bar-label" style="{{ label_style | strip }}">
+                {{- label -}}
+              </span>
+            </div>
+          </div>
+        </div>
+      {%- endfor -%}
+    </div>
+
+    {%- if show_footnote and footnote != blank -%}
+      <p class="pct-bars-footnote" style="color: {{ footnote_color }};">
+        {{ footnote }}
+      </p>
+    {%- endif -%}
+
+  </div>
+</div>
+
+{% stylesheet %}
+  .pct-bars-section {
+    box-sizing: border-box;
+    width: 100%;
+  }
+
+  .pct-bars-inner {
+    margin-inline: auto;
+    padding-inline: 24px;
+    box-sizing: border-box;
+    width: 100%;
+  }
+
+  .pct-bars-heading {
+    margin: 0 0 28px;
+    font-size: clamp(1.375rem, 3.5vw, 2.25rem);
+    font-weight: 700;
+    line-height: 1.1;
+    text-transform: uppercase;
+    letter-spacing: -0.01em;
+  }
+
+  .pct-bars-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .pct-bar-track {
+    width: 100%;
+    height: 52px;
+    border-radius: 100px;
+    overflow: hidden;
+    position: relative;
+  }
+
+  .pct-bar-fill {
+    height: 100%;
+    border-radius: 100px;
+    display: flex;
+    align-items: center;
+    padding-inline: 20px;
+    box-sizing: border-box;
+    /* No-JS / reduced-motion fallback: show at full target width */
+    width: var(--target-pct);
+    will-change: width;
+  }
+
+  /* When JS animation is active: start at 0, transition to target */
+  .pct-bars-will-animate .pct-bar-fill {
+    width: 0;
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .pct-bars-will-animate .pct-bar-fill {
+      transition: width 0.85s cubic-bezier(0.35, 0, 0.15, 1);
+    }
+  }
+
+  .pct-bars-will-animate .pct-bar-fill.pct-bar--visible {
+    width: var(--target-pct);
+  }
+
+  .pct-bar-label {
+    white-space: nowrap;
+    font-size: 0.875rem;
+    letter-spacing: 0.02em;
+    line-height: 1;
+  }
+
+  @media screen and (min-width: 750px) {
+    .pct-bar-track {
+      height: 56px;
+    }
+
+    .pct-bar-label {
+      font-size: 0.9375rem;
+    }
+  }
+
+  .pct-bars-footnote {
+    margin: 20px 0 0;
+    font-size: 0.75rem;
+    line-height: 1.55;
+    max-width: 640px;
+  }
+{% endstylesheet %}
+
+<script>
+(function () {
+  var section = document.getElementById('PctBars-{{ sid }}');
+  if (!section) return;
+
+  var fills = section.querySelectorAll('.pct-bar-fill');
+  if (!fills.length) return;
+
+  var reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  if (reduced) {
+    /* Respect user preference — bars stay at their CSS target width. */
+    return;
+  }
+
+  /* Mark the section so CSS resets fills to 0 */
+  section.classList.add('pct-bars-will-animate');
+
+  var observer = new IntersectionObserver(
+    function (entries) {
+      entries.forEach(function (entry) {
+        if (entry.isIntersecting) {
+          /* Stagger each bar slightly for a nicer cascade effect */
+          var fill = entry.target;
+          var idx  = Array.prototype.indexOf.call(fills, fill);
+          fill.style.transitionDelay = (idx * 80) + 'ms';
+          fill.classList.add('pct-bar--visible');
+          observer.unobserve(fill);
+        }
+      });
+    },
+    { threshold: 0.15 }
+  );
+
+  fills.forEach(function (fill) {
+    observer.observe(fill);
+  });
+})();
+</script>
+
+{% schema %}
+{
+  "name": "Percentage Bars",
+  "tag": "section",
+  "class": "section",
+  "disabled_on": {
+    "groups": ["header", "footer"]
+  },
+  "settings": [
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Why people take Sult"
+    },
+    {
+      "type": "color",
+      "id": "heading_color",
+      "label": "Heading color",
+      "default": "#111111"
+    },
+    {
+      "type": "color",
+      "id": "bg_color",
+      "label": "Background color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "range",
+      "id": "max_width",
+      "label": "Max content width",
+      "min": 400,
+      "max": 1200,
+      "step": 40,
+      "unit": "px",
+      "default": 720
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "label": "Padding top",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "unit": "px",
+      "default": 60
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "label": "Padding bottom",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "unit": "px",
+      "default": 60
+    },
+    {
+      "type": "header",
+      "content": "Footnote"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_footnote",
+      "label": "Show footnote",
+      "default": true
+    },
+    {
+      "type": "textarea",
+      "id": "footnote",
+      "label": "Footnote text",
+      "default": "*560 customers surveyed Sult. Most people think they need more water. In reality, they need better hydration."
+    },
+    {
+      "type": "color",
+      "id": "footnote_color",
+      "label": "Footnote color",
+      "default": "#777777"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "bar",
+      "name": "Percentage bar",
+      "settings": [
+        {
+          "type": "range",
+          "id": "percentage",
+          "label": "Percentage",
+          "min": 0,
+          "max": 100,
+          "step": 1,
+          "unit": "%",
+          "default": 75
+        },
+        {
+          "type": "text",
+          "id": "label",
+          "label": "Bar label",
+          "default": "Your benefit here"
+        },
+        {
+          "type": "color",
+          "id": "fill_color",
+          "label": "Fill color",
+          "default": "#c9f135"
+        },
+        {
+          "type": "color",
+          "id": "track_color",
+          "label": "Track (empty bar) color",
+          "default": "#e0e0e0"
+        },
+        {
+          "type": "color",
+          "id": "text_color",
+          "label": "Text color",
+          "default": "#111111"
+        },
+        {
+          "type": "checkbox",
+          "id": "bold_text",
+          "label": "Bold text",
+          "default": true
+        },
+        {
+          "type": "checkbox",
+          "id": "uppercase_text",
+          "label": "Uppercase text",
+          "default": true
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Percentage Bars",
+      "blocks": [
+        {
+          "type": "bar",
+          "settings": {
+            "percentage": 82,
+            "label": "82% Hydration & Daily Balance",
+            "fill_color": "#c9f135",
+            "track_color": "#e0e0e0",
+            "text_color": "#111111",
+            "bold_text": true,
+            "uppercase_text": true
+          }
+        },
+        {
+          "type": "bar",
+          "settings": {
+            "percentage": 74,
+            "label": "74% Stable Energy (No Crashes)",
+            "fill_color": "#c9f135",
+            "track_color": "#e0e0e0",
+            "text_color": "#111111",
+            "bold_text": true,
+            "uppercase_text": true
+          }
+        },
+        {
+          "type": "bar",
+          "settings": {
+            "percentage": 68,
+            "label": "68% Performance & Recovery",
+            "fill_color": "#c9f135",
+            "track_color": "#e0e0e0",
+            "text_color": "#111111",
+            "bold_text": true,
+            "uppercase_text": true
+          }
+        },
+        {
+          "type": "bar",
+          "settings": {
+            "percentage": 63,
+            "label": "63% Focus & Reduced Brain Fog",
+            "fill_color": "#c9f135",
+            "track_color": "#e0e0e0",
+            "text_color": "#111111",
+            "bold_text": true,
+            "uppercase_text": true
+          }
+        },
+        {
+          "type": "bar",
+          "settings": {
+            "percentage": 58,
+            "label": "58% Overall Wellbeing",
+            "fill_color": "#c9f135",
+            "track_color": "#e0e0e0",
+            "text_color": "#111111",
+            "bold_text": true,
+            "uppercase_text": true
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}
