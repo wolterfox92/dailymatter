@@ -1,0 +1,448 @@
+{% liquid
+  assign section_id = 'why-it-matters-' | append: section.id
+  assign active_tab_index = section.settings.active_tab | minus: 1
+  if active_tab_index < 0
+    assign active_tab_index = 0
+  endif
+%}
+
+<div class="section spacing-style" style="{% render 'spacing-style', settings: section.settings %}">
+  <why-it-matters
+    id="{{ section_id }}"
+    class="why-it-matters"
+    style="
+      --wim-bg: {{ section.settings.background_color }};
+      --wim-fg: {{ section.settings.text_color }};
+      --wim-pill-bg: {{ section.settings.pill_background_color }};
+      --wim-pill-border: {{ section.settings.pill_border_color }};
+      --wim-tab-active-bg: {{ section.settings.tab_active_background_color }};
+      --wim-tab-active-fg: {{ section.settings.tab_active_text_color }};
+    "
+  >
+    <div class="why-it-matters__inner">
+      <div class="why-it-matters__content">
+        <p class="why-it-matters__eyebrow">{{ section.settings.eyebrow }}</p>
+
+        <div class="why-it-matters__heading-wrap">
+          <h2 class="why-it-matters__heading">{{ section.settings.heading }}</h2>
+        </div>
+
+        <div class="why-it-matters__bottom">
+          {% if section.blocks.size > 0 %}
+            <div
+              class="why-it-matters__tabs"
+              role="tablist"
+              aria-label="{{ section.settings.eyebrow | escape }}"
+            >
+              {% for block in section.blocks %}
+                {% if block.type == 'tab' %}
+                  {% assign idx = forloop.index0 %}
+                  <button
+                    type="button"
+                    role="tab"
+                    class="why-it-matters__tab{% if idx == active_tab_index %} is-active{% endif %}"
+                    aria-selected="{% if idx == active_tab_index %}true{% else %}false{% endif %}"
+                    aria-controls="{{ section_id }}-panel-{{ idx }}"
+                    id="{{ section_id }}-tab-{{ idx }}"
+                    data-index="{{ idx }}"
+                    {{ block.shopify_attributes }}
+                  >
+                    {{ block.settings.label }}
+                  </button>
+                {% endif %}
+              {% endfor %}
+            </div>
+
+            <div class="why-it-matters__panels">
+              {% for block in section.blocks %}
+                {% if block.type == 'tab' %}
+                  {% assign idx = forloop.index0 %}
+                  <div
+                    class="why-it-matters__panel{% if idx == active_tab_index %} is-active{% endif %}"
+                    role="tabpanel"
+                    id="{{ section_id }}-panel-{{ idx }}"
+                    aria-labelledby="{{ section_id }}-tab-{{ idx }}"
+                    {% if idx != active_tab_index %}hidden{% endif %}
+                  >
+                    <p class="why-it-matters__panel-text">{{ block.settings.description }}</p>
+                  </div>
+                {% endif %}
+              {% endfor %}
+            </div>
+          {% endif %}
+        </div>
+      </div>
+
+      <div class="why-it-matters__media">
+        {% if section.settings.image != blank %}
+          {{
+            section.settings.image
+            | image_url: width: 1600
+            | image_tag:
+              loading: 'lazy',
+              widths: '480, 720, 960, 1200, 1600',
+              sizes: '(min-width: 990px) 720px, 100vw',
+              alt: section.settings.image.alt | default: section.settings.heading,
+              class: 'why-it-matters__image'
+          }}
+        {% else %}
+          {{ 'lifestyle-2' | placeholder_svg_tag: 'why-it-matters__image why-it-matters__image--placeholder' }}
+        {% endif %}
+      </div>
+    </div>
+  </why-it-matters>
+</div>
+
+<script>
+  (function () {
+    if (customElements.get('why-it-matters')) return;
+    class WhyItMatters extends HTMLElement {
+      connectedCallback() {
+        this.tabs = this.querySelectorAll('.why-it-matters__tab');
+        this.panels = this.querySelectorAll('.why-it-matters__panel');
+        this.tabs.forEach((tab) => {
+          tab.addEventListener('click', () => this.activate(tab.dataset.index));
+        });
+      }
+      activate(index) {
+        this.tabs.forEach((tab) => {
+          const isActive = tab.dataset.index === String(index);
+          tab.classList.toggle('is-active', isActive);
+          tab.setAttribute('aria-selected', isActive ? 'true' : 'false');
+        });
+        this.panels.forEach((panel, i) => {
+          const isActive = String(i) === String(index);
+          panel.classList.toggle('is-active', isActive);
+          if (isActive) {
+            panel.removeAttribute('hidden');
+          } else {
+            panel.setAttribute('hidden', '');
+          }
+        });
+      }
+    }
+    customElements.define('why-it-matters', WhyItMatters);
+  })();
+</script>
+
+{% stylesheet %}
+  .why-it-matters {
+    --wim-radius: 32px;
+    --wim-media-radius: 32px;
+
+    display: block;
+    width: 100%;
+    padding-inline: var(--page-margin, 16px);
+  }
+
+  .why-it-matters__inner {
+    position: relative;
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 24px;
+    background-color: var(--wim-bg);
+    color: var(--wim-fg);
+    border-radius: var(--wim-radius);
+    padding: 32px;
+    overflow: hidden;
+  }
+
+  @media (min-width: 990px) {
+    .why-it-matters__inner {
+      grid-template-columns: 1fr 1fr;
+      gap: 40px;
+      padding: 60px;
+      align-items: stretch;
+      min-height: 720px;
+    }
+  }
+
+  .why-it-matters__content {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 32px;
+    min-height: 100%;
+  }
+
+  .why-it-matters__eyebrow {
+    margin: 0;
+    font-family: var(--font-heading--family, var(--font-body--family));
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
+    font-size: clamp(14px, 1.5vw, 18px);
+    line-height: 1;
+    color: var(--wim-fg);
+  }
+
+  .why-it-matters__heading-wrap {
+    flex: 1 1 auto;
+    display: flex;
+    align-items: flex-start;
+  }
+
+  .why-it-matters__heading {
+    margin: 16px 0 0;
+    font-family: var(--font-heading--family, var(--font-body--family));
+    font-weight: 900;
+    font-size: clamp(40px, 7vw, 88px);
+    line-height: 1.05;
+    letter-spacing: -0.01em;
+    color: var(--wim-fg);
+    max-width: 12ch;
+  }
+
+  .why-it-matters__bottom {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  .why-it-matters__tabs {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 6px;
+    background-color: var(--wim-pill-bg);
+    border: 0.75px solid var(--wim-pill-border);
+    border-radius: 60px;
+    backdrop-filter: blur(5px);
+    -webkit-backdrop-filter: blur(5px);
+    width: fit-content;
+    max-width: 100%;
+    overflow-x: auto;
+  }
+
+  .why-it-matters__tab {
+    appearance: none;
+    border: 0;
+    background: transparent;
+    cursor: pointer;
+    padding: 12px 22px;
+    border-radius: 60px;
+    font-family: var(--font-body--family);
+    font-weight: 500;
+    font-size: clamp(15px, 1.4vw, 18px);
+    line-height: 1;
+    color: var(--wim-fg);
+    transition: background-color 150ms ease, color 150ms ease;
+    white-space: nowrap;
+  }
+
+  .why-it-matters__tab:hover {
+    background-color: rgba(0, 0, 0, 0.04);
+  }
+
+  .why-it-matters__tab.is-active {
+    background-color: var(--wim-tab-active-bg);
+    color: var(--wim-tab-active-fg);
+  }
+
+  .why-it-matters__tab:focus-visible {
+    outline: 2px solid var(--wim-fg);
+    outline-offset: 2px;
+  }
+
+  .why-it-matters__panels {
+    position: relative;
+  }
+
+  .why-it-matters__panel-text {
+    margin: 0;
+    font-family: var(--font-body--family);
+    font-weight: 500;
+    font-size: clamp(20px, 2.4vw, 36px);
+    line-height: 1.2;
+    letter-spacing: -0.01em;
+    color: var(--wim-fg);
+    max-width: 28ch;
+  }
+
+  .why-it-matters__media {
+    position: relative;
+    aspect-ratio: 4 / 5;
+    border-radius: var(--wim-media-radius);
+    overflow: hidden;
+    background-color: rgba(255, 255, 255, 0.4);
+  }
+
+  @media (min-width: 990px) {
+    .why-it-matters__media {
+      aspect-ratio: auto;
+      height: 100%;
+      min-height: 600px;
+    }
+  }
+
+  .why-it-matters__image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+  .why-it-matters__image--placeholder {
+    background: rgba(255, 255, 255, 0.6);
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Why it matters",
+  "tag": "section",
+  "class": "section-why-it-matters",
+  "disabled_on": {
+    "groups": ["header", "footer"]
+  },
+  "settings": [
+    {
+      "type": "text",
+      "id": "eyebrow",
+      "label": "Eyebrow",
+      "default": "Why it matters"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Made for the day you actually have"
+    },
+    {
+      "type": "image_picker",
+      "id": "image",
+      "label": "Image"
+    },
+    {
+      "type": "range",
+      "id": "active_tab",
+      "label": "Default active tab",
+      "min": 1,
+      "max": 6,
+      "step": 1,
+      "default": 1
+    },
+    {
+      "type": "header",
+      "content": "Colors"
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Background",
+      "default": "#c7bcff"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text",
+      "default": "#25162f"
+    },
+    {
+      "type": "color",
+      "id": "pill_background_color",
+      "label": "Tab bar background",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "pill_border_color",
+      "label": "Tab bar border",
+      "default": "#33130726"
+    },
+    {
+      "type": "color",
+      "id": "tab_active_background_color",
+      "label": "Active tab background",
+      "default": "#c9f073"
+    },
+    {
+      "type": "color",
+      "id": "tab_active_text_color",
+      "label": "Active tab text",
+      "default": "#243511"
+    },
+    {
+      "type": "header",
+      "content": "t:content.padding"
+    },
+    {
+      "type": "range",
+      "id": "padding-block-start",
+      "label": "t:settings.top",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 24
+    },
+    {
+      "type": "range",
+      "id": "padding-block-end",
+      "label": "t:settings.bottom",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 24
+    }
+  ],
+  "blocks": [
+    {
+      "type": "tab",
+      "name": "Tab",
+      "settings": [
+        {
+          "type": "text",
+          "id": "label",
+          "label": "Tab label",
+          "default": "Work"
+        },
+        {
+          "type": "textarea",
+          "id": "description",
+          "label": "Description",
+          "default": "Voor lange dagen waarop je je basis niet wilt vergeten."
+        }
+      ]
+    }
+  ],
+  "max_blocks": 6,
+  "presets": [
+    {
+      "name": "Why it matters",
+      "category": "t:categories.storytelling",
+      "blocks": [
+        {
+          "type": "tab",
+          "settings": {
+            "label": "Work",
+            "description": "Voor lange dagen waarop je je basis niet wilt vergeten."
+          }
+        },
+        {
+          "type": "tab",
+          "settings": {
+            "label": "Move",
+            "description": "Voor actieve dagen waarop je lichaam alles geeft."
+          }
+        },
+        {
+          "type": "tab",
+          "settings": {
+            "label": "Travel",
+            "description": "Voor onderweg, wanneer routine even op pauze staat."
+          }
+        },
+        {
+          "type": "tab",
+          "settings": {
+            "label": "Reset",
+            "description": "Voor de dagen waarop je opnieuw begint."
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}
