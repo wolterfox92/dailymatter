@@ -1,30 +1,199 @@
 {
   "sections": {
     "hero_main": {
-      "type": "custom-hero",
+      "type": "hero",
+      "blocks": {
+        "preheading_txt": {
+          "type": "text",
+          "name": "Pre-heading",
+          "settings": {
+            "text": "<p>70% VAN ONS IS UITGEDROOGD</p>",
+            "width": "fit-content",
+            "max_width": "normal",
+            "alignment": "left",
+            "type_preset": "h6",
+            "font": "var(--font-body--family)",
+            "font_size": "",
+            "line_height": "normal",
+            "letter_spacing": "wide",
+            "case": "uppercase",
+            "wrap": "pretty",
+            "color": "var(--color-foreground-heading)",
+            "background": false,
+            "background_color": "#00000026",
+            "corner_radius": 0,
+            "padding-block-start": 0,
+            "padding-block-end": 0,
+            "padding-inline-start": 0,
+            "padding-inline-end": 0
+          },
+          "blocks": {}
+        },
+        "heading_txt": {
+          "type": "text",
+          "name": "Heading",
+          "settings": {
+            "text": "<h1>HYDRATATIE EENVOUDIG <strong>VOOR JOU</strong></h1>",
+            "width": "fit-content",
+            "max_width": "normal",
+            "alignment": "left",
+            "type_preset": "h1",
+            "font": "var(--font-body--family)",
+            "font_size": "",
+            "line_height": "normal",
+            "letter_spacing": "normal",
+            "case": "none",
+            "wrap": "pretty",
+            "color": "var(--color-foreground-heading)",
+            "background": false,
+            "background_color": "#00000026",
+            "corner_radius": 0,
+            "padding-block-start": 0,
+            "padding-block-end": 0,
+            "padding-inline-start": 0,
+            "padding-inline-end": 0
+          },
+          "blocks": {}
+        },
+        "rating_txt": {
+          "type": "text",
+          "name": "Rating",
+          "settings": {
+            "text": "<p>\u2605\u2605\u2605\u2605\u2605 4.9/5 \u2014 8.000+ tevreden klanten</p>",
+            "width": "fit-content",
+            "max_width": "normal",
+            "alignment": "left",
+            "type_preset": "rte",
+            "font": "var(--font-body--family)",
+            "font_size": "",
+            "line_height": "normal",
+            "letter_spacing": "normal",
+            "case": "none",
+            "wrap": "pretty",
+            "color": "var(--color-foreground-heading)",
+            "background": false,
+            "background_color": "#00000026",
+            "corner_radius": 0,
+            "padding-block-start": 8,
+            "padding-block-end": 0,
+            "padding-inline-start": 0,
+            "padding-inline-end": 0
+          },
+          "blocks": {}
+        },
+        "buttons_grp": {
+          "type": "group",
+          "name": "Buttons",
+          "settings": {
+            "content_direction": "row",
+            "vertical_on_mobile": false,
+            "horizontal_alignment": "flex-start",
+            "vertical_alignment": "center",
+            "align_baseline": false,
+            "horizontal_alignment_flex_direction_column": "flex-start",
+            "vertical_alignment_flex_direction_column": "center",
+            "gap": 12,
+            "width": "fit-content",
+            "custom_width": 100,
+            "width_mobile": "fill",
+            "custom_width_mobile": 100,
+            "height": "fit",
+            "custom_height": 100,
+            "inherit_color_scheme": true,
+            "color_scheme": "",
+            "background_media": "none",
+            "video_position": "cover",
+            "background_image_position": "cover",
+            "border": "none",
+            "border_width": 1,
+            "border_opacity": 100,
+            "border_radius": 0,
+            "toggle_overlay": false,
+            "overlay_color": "#00000026",
+            "overlay_style": "solid",
+            "gradient_direction": "to top",
+            "link": "",
+            "open_in_new_tab": false,
+            "placeholder": "",
+            "padding-block-start": 8,
+            "padding-block-end": 0,
+            "padding-inline-start": 0,
+            "padding-inline-end": 0
+          },
+          "blocks": {
+            "btn_shop": {
+              "type": "button",
+              "name": "Shop Now",
+              "settings": {
+                "label": "SHOP NOW",
+                "link": "shopify://collections/all",
+                "open_in_new_tab": false,
+                "style_class": "button",
+                "width": "fit-content",
+                "custom_width": 100,
+                "width_mobile": "fill",
+                "custom_width_mobile": 100
+              },
+              "blocks": {}
+            },
+            "btn_bundle": {
+              "type": "button",
+              "name": "Bundle",
+              "settings": {
+                "label": "BUNDLE & SAVE",
+                "link": "shopify://collections/bundles",
+                "open_in_new_tab": false,
+                "style_class": "button-secondary",
+                "width": "fit-content",
+                "custom_width": 100,
+                "width_mobile": "fill",
+                "custom_width_mobile": 100
+              },
+              "blocks": {}
+            }
+          },
+          "block_order": [
+            "btn_shop",
+            "btn_bundle"
+          ]
+        }
+      },
+      "block_order": [
+        "preheading_txt",
+        "heading_txt",
+        "rating_txt",
+        "buttons_grp"
+      ],
+      "name": "t:names.hero",
       "settings": {
-        "title": "<p>For days<br>that ask more</p>",
-        "highlight_background_color": "#F7F262",
-        "highlight_text_color": "#331307",
-        "button_1_label": "Shop all",
-        "button_1_link": "/collections/all",
-        "button_1_style": "primary",
-        "button_2_label": "Bundle and save",
-        "button_2_link": "/collections/all",
-        "button_2_style": "secondary",
-        "show_social_proof": true,
-        "show_star": true,
-        "rating_text": "(4.9/5)",
-        "clients_text": "Happily used by 300+ clients",
+        "media_type_1": "image",
+        "media_type_2": "image",
+        "stack_media_on_mobile": false,
+        "custom_mobile_media": false,
+        "media_type_1_mobile": "image",
+        "media_type_2_mobile": "image",
+        "link": "",
+        "open_in_new_tab": false,
+        "content_direction": "column",
+        "vertical_on_mobile": true,
+        "horizontal_alignment": "flex-start",
+        "vertical_alignment": "flex-end",
+        "align_baseline": false,
+        "horizontal_alignment_flex_direction_column": "flex-start",
+        "vertical_alignment_flex_direction_column": "flex-end",
+        "gap": 16,
         "section_width": "page-width",
         "section_height": "large",
-        "section_height_custom": 85,
-        "text_alignment": "flex-start",
-        "rounded_bottom": true,
-        "corner_radius": 40,
-        "color_scheme": "scheme-1",
-        "toggle_overlay": false,
-        "overlay_color": "#00000040"
+        "section_height_custom": 80,
+        "color_scheme": "scheme-6",
+        "toggle_overlay": true,
+        "overlay_color": "#12121280",
+        "overlay_style": "gradient",
+        "gradient_direction": "to top",
+        "blurred_reflection": false,
+        "reflection_opacity": 75,
+        "padding-block-start": 100,
+        "padding-block-end": 80
       }
     },
     "marquee_trust": {
@@ -33,7 +202,7 @@
         "txt_1": {
           "type": "text",
           "settings": {
-            "text": "<p>Gratis bezorgd vanaf €30</p>",
+            "text": "<p>Gratis bezorgd vanaf \u20ac30</p>",
             "width": "fit-content",
             "max_width": "normal",
             "alignment": "left",
@@ -108,7 +277,7 @@
         "txt_4": {
           "type": "text",
           "settings": {
-            "text": "<p>★★★★★ 4.9/5 beoordeling</p>",
+            "text": "<p>\u2605\u2605\u2605\u2605\u2605 4.9/5 beoordeling</p>",
             "width": "fit-content",
             "max_width": "normal",
             "alignment": "left",
@@ -1146,7 +1315,7 @@
                 "text": {
                   "type": "text",
                   "settings": {
-                    "text": "<p>Onze formules zijn ontwikkeld samen met experts in voedingswetenschap en circadiaanse biologie. Elk ingrediënt is geselecteerd op effectiviteit en veiligheid — geen opvullers, alleen wat werkt.</p>",
+                    "text": "<p>Onze formules zijn ontwikkeld samen met experts in voedingswetenschap en circadiaanse biologie. Elk ingredi\u00ebnt is geselecteerd op effectiviteit en veiligheid \u2014 geen opvullers, alleen wat werkt.</p>",
                     "width": "100%",
                     "max_width": "narrow",
                     "alignment": "left",
@@ -1288,7 +1457,7 @@
             "desc_1": {
               "type": "text",
               "settings": {
-                "text": "<p>Hoogwaardige ingrediënten, geproduceerd in Europa</p>",
+                "text": "<p>Hoogwaardige ingredi\u00ebnten, geproduceerd in Europa</p>",
                 "width": "100%",
                 "max_width": "normal",
                 "alignment": "center",
@@ -1684,7 +1853,7 @@
                 "text": {
                   "type": "text",
                   "settings": {
-                    "text": "<p>Daily Matter is ontstaan vanuit een simpele vraag: waarom is het zo moeilijk om consequent goed voor jezelf te zorgen? We ontwikkelden producten die eenvoudig passen in je dagelijkse routine — effectief, zonder gedoe.</p>",
+                    "text": "<p>Daily Matter is ontstaan vanuit een simpele vraag: waarom is het zo moeilijk om consequent goed voor jezelf te zorgen? We ontwikkelden producten die eenvoudig passen in je dagelijkse routine \u2014 effectief, zonder gedoe.</p>",
                     "width": "100%",
                     "max_width": "narrow",
                     "alignment": "left",
@@ -1805,7 +1974,7 @@
                 "text": {
                   "type": "text",
                   "settings": {
-                    "text": "<p>Onze producten zijn bedoeld voor iedereen die bewust bezig is met hun gezondheid en dagelijks welzijn. Of je nu sporter bent, drukke professional, of gewoon beter wil slapen en herstellen — Daily Matter past in jouw routine.</p>",
+                    "text": "<p>Onze producten zijn bedoeld voor iedereen die bewust bezig is met hun gezondheid en dagelijks welzijn. Of je nu sporter bent, drukke professional, of gewoon beter wil slapen en herstellen \u2014 Daily Matter past in jouw routine.</p>",
                     "width": "100%",
                     "max_width": "normal",
                     "alignment": "left",
@@ -1844,7 +2013,7 @@
                 "text": {
                   "type": "text",
                   "settings": {
-                    "text": "<p>We raden aan om minimaal 30 dagen consistent te gebruiken. De meeste klanten merken al binnen 1-2 weken een verschil. Niet tevreden na 90 dagen? Dan krijg je je geld terug — zonder vragen.</p>",
+                    "text": "<p>We raden aan om minimaal 30 dagen consistent te gebruiken. De meeste klanten merken al binnen 1-2 weken een verschil. Niet tevreden na 90 dagen? Dan krijg je je geld terug \u2014 zonder vragen.</p>",
                     "width": "100%",
                     "max_width": "normal",
                     "alignment": "left",
@@ -1883,7 +2052,7 @@
                 "text": {
                   "type": "text",
                   "settings": {
-                    "text": "<p>Bestellingen worden dezelfde werkdag verwerkt en zijn doorgaans binnen 1-3 werkdagen bij je thuis. Gratis bezorgd vanaf €30.</p>",
+                    "text": "<p>Bestellingen worden dezelfde werkdag verwerkt en zijn doorgaans binnen 1-3 werkdagen bij je thuis. Gratis bezorgd vanaf \u20ac30.</p>",
                     "width": "100%",
                     "max_width": "normal",
                     "alignment": "left",
