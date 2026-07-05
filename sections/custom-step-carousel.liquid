@@ -1,0 +1,577 @@
+{%- liquid
+  assign block_count = section.blocks.size
+-%}
+
+<div
+  class="step-carousel color-{{ section.settings.color_scheme }} section--{{ section.settings.section_width }}"
+  style="
+    --step-highlight-bg: {{ section.settings.highlight_background_color }};
+    --step-highlight-fg: {{ section.settings.highlight_text_color }};
+    --step-card-radius: {{ section.settings.card_corner_radius }}px;
+    padding-block-start: {{ section.settings.padding_block_start }}px;
+    padding-block-end: {{ section.settings.padding_block_end }}px;
+  "
+>
+  <div class="step-carousel__header section-content-wrapper page-width">
+    {%- if section.settings.eyebrow != blank -%}
+      <p class="step-carousel__eyebrow">{{ section.settings.eyebrow }}</p>
+    {%- endif -%}
+
+    {%- if section.settings.title != blank -%}
+      <h2 class="step-carousel__title">{{ section.settings.title }}</h2>
+    {%- endif -%}
+
+    {%- if section.settings.subtitle != blank -%}
+      <p class="step-carousel__subtitle">{{ section.settings.subtitle }}</p>
+    {%- endif -%}
+  </div>
+
+  {%- if block_count > 0 -%}
+    <custom-step-carousel
+      class="step-carousel__slider"
+      role="group"
+      aria-roledescription="carousel"
+      aria-label="{{ section.settings.eyebrow | default: section.settings.title | strip_html | escape }}"
+    >
+      <ul class="step-carousel__track" data-track role="list">
+        {%- for block in section.blocks -%}
+          <li
+            class="step-carousel__slide"
+            data-slide
+            aria-roledescription="slide"
+            aria-label="{{ forloop.index }} / {{ block_count }}"
+            {{ block.shopify_attributes }}
+          >
+            <article
+              class="step-card"
+              style="
+                --card-bg: {{ block.settings.card_background }};
+                --card-fg: {{ block.settings.card_text }};
+              "
+            >
+              <div class="step-card__body">
+                {%- if block.settings.step_label != blank -%}
+                  <p class="step-card__step">{{ block.settings.step_label }}</p>
+                {%- endif -%}
+                {%- if block.settings.heading != blank -%}
+                  <h3 class="step-card__heading">{{ block.settings.heading }}</h3>
+                {%- endif -%}
+                {%- if block.settings.subheading != blank -%}
+                  <p class="step-card__subheading">{{ block.settings.subheading }}</p>
+                {%- endif -%}
+              </div>
+
+              {%- if block.settings.image != blank -%}
+                <div class="step-card__media">
+                  {{
+                    block.settings.image
+                    | image_url: width: 720
+                    | image_tag:
+                      width: block.settings.image.width,
+                      height: block.settings.image.height,
+                      widths: '280, 420, 560, 720',
+                      sizes: '(min-width: 750px) 360px, 78vw',
+                      alt: block.settings.image.alt,
+                      loading: 'lazy',
+                      decoding: 'async',
+                      class: 'step-card__image'
+                  }}
+                </div>
+              {%- endif -%}
+            </article>
+          </li>
+        {%- endfor -%}
+      </ul>
+
+      <div class="step-carousel__controls section-content-wrapper page-width">
+        <div class="step-carousel__nav">
+          <button type="button" class="step-carousel__arrow" data-dir="prev" aria-label="{{ 'content.pagination.previous' | t }}">
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" aria-hidden="true" focusable="false">
+              <path d="M15 5l-7 7 7 7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </button>
+
+          <p class="step-carousel__counter" aria-hidden="true">
+            <span data-current>1</span>/<span>{{ block_count }}</span>
+          </p>
+
+          <button type="button" class="step-carousel__arrow" data-dir="next" aria-label="{{ 'content.pagination.next' | t }}">
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" aria-hidden="true" focusable="false">
+              <path d="M9 5l7 7-7 7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </button>
+        </div>
+
+        <div class="step-carousel__dots">
+          {%- for block in section.blocks -%}
+            <button
+              type="button"
+              class="step-carousel__dot{% if forloop.first %} is-active{% endif %}"
+              data-dot="{{ forloop.index0 }}"
+              aria-label="{{ block.settings.step_label | default: forloop.index | escape }}"
+              {% if forloop.first %}aria-current="true"{% else %}aria-current="false"{% endif %}
+            ></button>
+          {%- endfor -%}
+        </div>
+      </div>
+    </custom-step-carousel>
+  {%- endif -%}
+</div>
+
+<script src="{{ 'custom-step-carousel.js' | asset_url }}" defer="defer"></script>
+
+{% stylesheet %}
+  .step-carousel {
+    --step-card-width: clamp(260px, 78vw, 360px);
+    --step-card-gap: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: clamp(24px, 4vw, 40px);
+    overflow: clip;
+  }
+
+  .step-carousel__header {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 12px;
+    width: 100%;
+    margin-inline: auto;
+  }
+
+  .step-carousel__eyebrow {
+    margin: 0;
+    font-size: 0.8125rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--color-foreground);
+  }
+
+  .step-carousel__title {
+    margin: 0;
+    max-width: 16ch;
+    font-weight: 800;
+    line-height: 1.05;
+    letter-spacing: -0.01em;
+    font-size: clamp(1.9rem, 6vw, 3.25rem);
+    color: var(--color-foreground-heading);
+    text-wrap: balance;
+  }
+
+  .step-carousel__title p,
+  .step-carousel__title strong {
+    margin: 0;
+    font: inherit;
+  }
+
+  /* Wrapping a word in **bold** in the title rich-text editor highlights it. */
+  .step-carousel__title strong {
+    display: inline-block;
+    background-color: var(--step-highlight-bg);
+    color: var(--step-highlight-fg);
+    padding-inline: 0.2em;
+  }
+
+  .step-carousel__subtitle {
+    margin: 0;
+    max-width: 42ch;
+    font-size: clamp(1rem, 2.5vw, 1.125rem);
+    line-height: 1.5;
+    color: var(--color-foreground);
+    opacity: 0.75;
+  }
+
+  /* --- Slider --- */
+  .step-carousel__slider {
+    display: flex;
+    flex-direction: column;
+    gap: clamp(16px, 3vw, 28px);
+  }
+
+  .step-carousel__track {
+    display: flex;
+    gap: var(--step-card-gap);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    scroll-behavior: smooth;
+    scrollbar-width: none;
+    /* Reserve room so the first and last cards can centre in the viewport. */
+    padding-inline: max(var(--util-page-margin-offset, 20px), calc(50% - var(--step-card-width) / 2));
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior-x: contain;
+  }
+
+  .step-carousel__track::-webkit-scrollbar {
+    display: none;
+  }
+
+  .step-carousel__slide {
+    flex: 0 0 var(--step-card-width);
+    max-width: var(--step-card-width);
+    scroll-snap-align: center;
+  }
+
+  .step-card {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 16px;
+    height: 100%;
+    min-height: clamp(300px, 62vw, 380px);
+    padding: clamp(18px, 4vw, 24px);
+    border-radius: var(--step-card-radius, 24px);
+    background-color: var(--card-bg, #c3e8a6);
+    color: var(--card-fg, #1c1b3a);
+    overflow: hidden;
+  }
+
+  .step-card__body {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .step-card__step {
+    margin: 0;
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    opacity: 0.7;
+  }
+
+  .step-card__heading {
+    margin: 0;
+    font-weight: 800;
+    line-height: 0.95;
+    letter-spacing: -0.01em;
+    text-transform: uppercase;
+    font-size: clamp(1.6rem, 6vw, 2.15rem);
+    color: inherit;
+  }
+
+  .step-card__subheading {
+    margin: 0;
+    font-size: 1rem;
+    font-weight: 500;
+    line-height: 1.35;
+    opacity: 0.85;
+  }
+
+  .step-card__media {
+    border-radius: calc(var(--step-card-radius, 24px) - 8px);
+    overflow: hidden;
+    aspect-ratio: 3 / 2;
+  }
+
+  .step-card__image {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  /* --- Controls --- */
+  .step-carousel__controls {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    width: 100%;
+    margin-inline: auto;
+  }
+
+  .step-carousel__nav {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .step-carousel__arrow {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    border: 1px solid var(--color-border, currentColor);
+    background-color: transparent;
+    color: var(--color-foreground);
+    cursor: pointer;
+    transition: background-color 120ms ease, color 120ms ease, opacity 120ms ease;
+  }
+
+  .step-carousel__arrow:hover {
+    background-color: var(--color-foreground);
+    color: var(--color-background);
+  }
+
+  .step-carousel__arrow:focus-visible {
+    outline: 2px solid var(--color-foreground);
+    outline-offset: 2px;
+  }
+
+  .step-carousel__arrow:disabled {
+    opacity: 0.35;
+    cursor: default;
+  }
+
+  .step-carousel__arrow:disabled:hover {
+    background-color: transparent;
+    color: var(--color-foreground);
+  }
+
+  .step-carousel__counter {
+    margin: 0;
+    min-width: 3ch;
+    text-align: center;
+    font-size: 0.9375rem;
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+    color: var(--color-foreground);
+  }
+
+  .step-carousel__dots {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .step-carousel__dot {
+    width: 10px;
+    height: 10px;
+    padding: 0;
+    border: 0;
+    border-radius: 999px;
+    background-color: var(--color-foreground);
+    opacity: 0.25;
+    cursor: pointer;
+    transition: width 160ms ease, opacity 160ms ease, background-color 160ms ease;
+  }
+
+  .step-carousel__dot.is-active {
+    width: 26px;
+    opacity: 1;
+    background-color: var(--step-highlight-bg, var(--color-foreground));
+  }
+
+  .step-carousel__dot:focus-visible {
+    outline: 2px solid var(--color-foreground);
+    outline-offset: 3px;
+  }
+
+  @media screen and (min-width: 750px) {
+    .step-carousel {
+      --step-card-width: clamp(320px, 34vw, 380px);
+      --step-card-gap: 24px;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .step-carousel__track {
+      scroll-behavior: auto;
+    }
+    .step-carousel__arrow,
+    .step-carousel__dot {
+      transition: none;
+    }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Step carousel",
+  "tag": "section",
+  "class": "section-wrapper custom-step-carousel-section",
+  "disabled_on": {
+    "groups": ["header", "footer"]
+  },
+  "settings": [
+    {
+      "type": "header",
+      "content": "Content"
+    },
+    {
+      "type": "text",
+      "id": "eyebrow",
+      "label": "Eyebrow",
+      "default": "Waarom Daily Matters"
+    },
+    {
+      "type": "richtext",
+      "id": "title",
+      "label": "Title",
+      "info": "Wrap text in **bold** to highlight it with the highlight color.",
+      "default": "<p>Feeling good should not feel like another full-time job.</p>"
+    },
+    {
+      "type": "text",
+      "id": "subtitle",
+      "label": "Subtitle",
+      "default": "Simpele dagelijkse supplementen die passen in het leven dat je al hebt."
+    },
+    {
+      "type": "header",
+      "content": "Appearance"
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "Color scheme",
+      "default": "scheme-1"
+    },
+    {
+      "type": "color",
+      "id": "highlight_background_color",
+      "label": "Highlight color (bold text + active dot)",
+      "default": "#c3e8a6"
+    },
+    {
+      "type": "color",
+      "id": "highlight_text_color",
+      "label": "Highlight text color",
+      "default": "#1c1b3a"
+    },
+    {
+      "type": "range",
+      "id": "card_corner_radius",
+      "label": "Card corner radius",
+      "min": 0,
+      "max": 40,
+      "step": 2,
+      "unit": "px",
+      "default": 24
+    },
+    {
+      "type": "select",
+      "id": "section_width",
+      "label": "Width",
+      "options": [
+        { "value": "page-width", "label": "Page" },
+        { "value": "full-width", "label": "Full" }
+      ],
+      "default": "page-width"
+    },
+    {
+      "type": "header",
+      "content": "Padding"
+    },
+    {
+      "type": "range",
+      "id": "padding_block_start",
+      "label": "Top",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "unit": "px",
+      "default": 48
+    },
+    {
+      "type": "range",
+      "id": "padding_block_end",
+      "label": "Bottom",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "unit": "px",
+      "default": 48
+    }
+  ],
+  "blocks": [
+    {
+      "type": "step",
+      "name": "Step",
+      "settings": [
+        {
+          "type": "text",
+          "id": "step_label",
+          "label": "Step label",
+          "default": "Stap 01"
+        },
+        {
+          "type": "text",
+          "id": "heading",
+          "label": "Heading",
+          "default": "Vul je fles met water."
+        },
+        {
+          "type": "text",
+          "id": "subheading",
+          "label": "Subheading",
+          "default": "Kraanwater is top."
+        },
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Image"
+        },
+        {
+          "type": "color",
+          "id": "card_background",
+          "label": "Card background",
+          "default": "#c3e8a6"
+        },
+        {
+          "type": "color",
+          "id": "card_text",
+          "label": "Card text",
+          "default": "#1c1b3a"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Step carousel",
+      "category": "Storytelling",
+      "blocks": [
+        {
+          "type": "step",
+          "settings": {
+            "step_label": "Stap 01",
+            "heading": "Vul je fles met water.",
+            "subheading": "Kraanwater is top.",
+            "card_background": "#c3e8a6",
+            "card_text": "#1c1b3a"
+          }
+        },
+        {
+          "type": "step",
+          "settings": {
+            "step_label": "Stap 02",
+            "heading": "Wissel je pod.",
+            "subheading": "Nieuwe smaak, nieuwe boost.",
+            "card_background": "#d9d2f5",
+            "card_text": "#1c1b3a"
+          }
+        },
+        {
+          "type": "step",
+          "settings": {
+            "step_label": "Stap 03",
+            "heading": "Ruik & proef je pod.",
+            "subheading": "Kies elke dag uit 25 smaken.",
+            "card_background": "#f3e7d3",
+            "card_text": "#1c1b3a"
+          }
+        },
+        {
+          "type": "step",
+          "settings": {
+            "step_label": "Stap 04",
+            "heading": "Geniet elke dag.",
+            "subheading": "Simpel vol te houden.",
+            "card_background": "#c3e8a6",
+            "card_text": "#1c1b3a"
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}
